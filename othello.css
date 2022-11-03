@@ -1,0 +1,456 @@
+/* ===========================
+ * General, high-level styles.
+ * =========================== */
+
+:root {
+  /* The size of the squares in the Othello board.  Many other things are
+   * computed relative to this size, which will change in certain screen
+   * layouts and sizes. */
+  --square-size: 10vmin;
+}
+
+body {
+  /* So the user can't horizontally scroll to the corner of the ribbon on the
+   * right side of the page. */
+  overflow-x: hidden;
+  /* Disable pull-to-refresh on mobile.  It is too easy to accidentally lose
+   * your connection during P2P play if you can pull to refresh. */
+  overscroll-behavior-y: contain;
+}
+
+body.docs {
+  /* The documentation pages look terrible without some limits on their size.
+   * The max width is set in em units so that it is limited to a certain number
+   * of characters rather than pixels. */
+  max-width: 42em;
+  margin: 0 auto;
+  border: 1px solid black;
+  padding: 0 2em;
+}
+
+body.docs p span {
+  vertical-align: top;
+}
+
+a {
+  /* No special color for links. */
+  color: unset;
+}
+
+a.docs {
+  /* The documentation links at the bottom of the page should not take up space
+   * in the layout.  They should always be at the bottom. */
+  position: absolute;
+  bottom: 1em;
+  font-size: 3vmin;
+}
+
+/* Normally, these would be stacked */
+a.docs.left {
+  left: 1em;
+}
+a.docs.right {
+  right: 1em;
+}
+
+button {
+  /* Buttons are white and rounded. */
+  background-color: white;
+  border: black solid 0.15vmin;
+  border-radius: 3.5vmin;
+  height: 7vmin;
+  font-size: 4.5vmin;
+  padding: 0 3.5vmin;
+}
+
+label,
+input[type=text] {
+  /* Text inputs and their labels should have the same font size. */
+  font-size: 3vmin;
+}
+
+input[type=text] {
+  /* Text input sizing and spacing. */
+  width: 30vmin;
+  margin-bottom: 5vmin;
+}
+
+.hide-by-default:not(.show) {
+  /* Hidden by default.  The .show class will remove this attribute and revert
+   * to the original display value, whatever it was.  This is marked
+   * "important" to bypass the normal specificity rules that would make the
+   * ID-based selectors take priority over this class-based one. */
+  display: none !important;
+}
+
+.hide {
+  display: none;
+}
+
+/* ======================
+ * High-level containers.
+ * ====================== */
+
+#appContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+#gameContainer,
+#p2pContainer,
+#idContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+#p2pContainer {
+  /* The close button will be absolutely positioned within this. */
+  position: relative;
+
+  margin-top: 4vmin;
+}
+
+#videoContainer {
+  /* The smaller video element will be absolutely positioned within this. */
+  position: relative;
+
+  /* Makes sure the container is exactly the right size, with no extra space
+   * for descending text.  Without this, the bottom-aligned video element would
+   * hang too low. */
+  line-height: 0;
+
+  margin-bottom: 2vmin;
+}
+
+
+/* ===============
+ * The game board.
+ * =============== */
+
+#gameBoard {
+  /* The game board is an 8x8 grid. */
+  display: grid;
+  grid-template: repeat(8, 1fr) / repeat(8, 1fr);
+
+  /* The border around the whole board. */
+  border: 0.15vmin solid black;
+
+  /* The .spot elements will be positioned absolutely within this board. */
+  position: relative;
+}
+
+/* Any container that holds a stone, including a square in the board. */
+.stone-container {
+  width: var(--square-size);
+  height: var(--square-size);
+
+  /* For the score board stones, we need to make sure the size of the container
+   * is properly constrained.  Otherwise, display: inline would make the SVG
+   * inside blow up and escape the width & height above. */
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+
+  /* The score board stones have text overlayed with absolute positioning. */
+  position: relative;
+}
+
+.square {
+  /* The squares are all green with a black border. */
+  background-color: green;
+  border: 0.15vmin solid black;
+
+  /* The size of the squares should include the border, or else the overall
+   * board might be too big. */
+  box-sizing: border-box;
+
+  /* Fixes minor positioning weirdness for svg at zoom */
+  line-height: 0;
+}
+
+.spot {
+  /* A "dot" at the corners of certain parts of the board.  This base class
+   * contains everything but the actual positions. */
+  position: absolute;
+  width: 2vmin;
+  height: 2vmin;
+  border-radius: 50%;
+  background-color: black;
+}
+
+/* The positions of specific spots. */
+#spot-0 {
+  left: calc(var(--square-size) * 2 - 1vmin);
+  top: calc(var(--square-size) * 2 - 1vmin);
+}
+#spot-1 {
+  left: calc(var(--square-size) * 6 - 1vmin);
+  top: calc(var(--square-size) * 2 - 1vmin);
+}
+#spot-2 {
+  left: calc(var(--square-size) * 2 - 1vmin);
+  top: calc(var(--square-size) * 6 - 1vmin);
+}
+#spot-3 {
+  left: calc(var(--square-size) * 6 - 1vmin);
+  top: calc(var(--square-size) * 6 - 1vmin);
+}
+
+/* The buttons below the game board should be spaced apart a little. */
+#resetButton,
+#remoteButton,
+#tableStatus {
+  margin-top: 4vmin;
+}
+
+
+/* ====================================
+ * The score board and status displays.
+ * ==================================== */
+
+#scoreBoard {
+  margin-bottom: 1vmin;
+}
+
+.score-wrapper {
+  /* A wrapper for the score of an individual player. */
+  display: inline-block;
+  width: calc(4 * var(--square-size));
+  text-align: center;
+
+  /* Fixes some weirdness with sizing of text in edge cases */
+  line-height: 0;
+}
+
+.score-text {
+  /* Make sure the score text aligns well with the stone. */
+  display: inline-block;
+  vertical-align: top;
+  font-size: var(--square-size);
+  line-height: var(--square-size);
+}
+
+/* Add a colon before the score. */
+.score-text:before {
+  content: ":";
+}
+
+/* Class attached to the stone in the score panel of the player whose turn it
+ * is. */
+.turn {
+  filter: drop-shadow(0vmin 0vmin 2vmin red);
+}
+
+/* The message container shows some status text on top of the stone. */
+.msg-container {
+  position: absolute;
+  display: inline-block;
+  font-size: calc(0.3 * var(--square-size));
+  font-weight: bold;
+}
+
+/* The white stone will have messages in black text, and vice-versa. */
+.white .msg-container {
+  color: black;
+}
+.black .msg-container {
+  color: white;
+}
+
+/* Use classes on the score-board stone to show the various status messages in
+ * the message container. */
+.pass .msg-container:before {
+  content: "PASS";
+}
+.win .msg-container:before {
+  content: "WIN";
+}
+.tie .msg-container:before {
+  content: "TIE";
+}
+.bailed .msg-container:before {
+  content: "GONE";
+}
+
+/* These states will show change the color of the shadow behind the score board
+ * stone. */
+.tie,
+.win {
+  filter: drop-shadow(-1vmin 1vmin 1vmin red);
+}
+
+.bailed {
+  filter: drop-shadow(-1vmin 1vmin 1vmin green);
+}
+
+
+
+/* ======================
+ * The stones themselves.
+ * ====================== */
+
+svg {
+  /* The SVG should scale according to its container. */
+  width: 100%;
+  height: 100%;
+}
+
+/* The circle within the SVG. */
+.stone {
+  /* When we use transform to animate it, do it relative to the center. */
+  transform-origin: 50% 50%;
+
+  /* Empty by default.  Game board squares all contain an SVG for a stone, but
+   * you just won't see it until we give the container a color class. */
+  fill: none;
+  stroke: none;
+  stroke-width: 1px;  /* In SVG coordinates, not page coordinates. */
+}
+
+.black .stone {
+  fill: black;
+  stroke: white;
+}
+
+.white .stone {
+  fill: white;
+  stroke: black;
+}
+
+/* The circle inside the stone circle, which is used to show various states. */
+.indicator {
+  fill: none;
+  stroke: none;
+}
+
+/* If this is the last piece played, make the indicator red. */
+/* .last .indicator {
+  fill: red;
+} */
+
+/* If this is a square for a valid play, make the indicator 50% transparent
+ * black. */
+.valid .indicator {
+  fill: rgba(0, 0, 0, 0.5);
+}
+
+/* When we flip a stone, we use the .flip class temporarily to animate the
+ * change. There are separate animations for black & white because you can't
+ * use CSS filters to change the stroke and fill colors in an SVG. */
+.black.flip .stone {
+  animation: flip-black 1s ease-in-out;
+}
+.white.flip .stone {
+  animation: flip-white 1s ease-in-out;
+}
+
+/* Flip from black to white by shrinking horizontally, then expanding back out
+ * to full size.  Fade out the stroke along the way to reduce aliasing. */
+@keyframes flip-white {
+  0% {
+    transform: scaleX(1);
+    fill: black;
+    stroke: white;
+  }
+  50% {
+    transform: scaleX(0);
+    fill: black;
+    stroke: none;
+  }
+  50.001% {
+    transform: scaleX(0);
+    fill: white;
+    stroke: none;
+  }
+  100% {
+    transform: scaleX(1);
+    fill: white;
+    stroke: black;
+  }
+}
+
+/* The same animation as above, but from white to black. */
+@keyframes flip-black {
+  0% {
+    transform: scaleX(1);
+    fill: white;
+    stroke: black;
+  }
+  50% {
+    transform: scaleX(0);
+    fill: white;
+    stroke: none;
+  }
+  50.001% {
+    transform: scaleX(0);
+    fill: black;
+    stroke: none;
+  }
+  100% {
+    transform: scaleX(1);
+    fill: black;
+    stroke: white;
+  }
+}
+
+
+
+/* =====================================================
+ * Changes to the layout and sizing based on the screen.
+ * ===================================================== */
+
+/* If it's less than a 5/4 aspect ratio, the p2p container doesn't fit well on
+ * the right side, so treat it like it was portrait mode. */
+@media (orientation: portrait), (max-aspect-ratio: 5/4) {
+  #appContainer {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+@media (orientation: landscape) {
+  /* In landscape mode, move the p2p container down a bit out of the way of the
+   * version banner. */
+  #p2pContainer {
+    margin-top: 20vmin;
+  }
+
+  /* In landscape mode, reduce the size of the squares slightly to make room
+   * for the reset button without scrolling. */
+  :root {
+    --square-size: 8vmin;
+  }
+
+  /* In landscape mode, move the docs links both to the right hand side. */
+  a.docs.left {
+    bottom: 2.5em;
+    right: 1em;
+    left: auto;
+  }
+}
+
+/* At this minimum aspect ratio for landscape mode, put a very small gutter
+ * between the game container and the p2p container. */
+@media (orientation: landscape) and (min-aspect-ratio: 5/4) {
+  #p2pContainer {
+    margin-left: 3vmin;
+  }
+}
+
+/* At these slightly larger ratios, increase the spacing. */
+@media (orientation: landscape) and (min-aspect-ratio: 14/10) {
+  #p2pContainer {
+    margin-left: 10vmin;
+  }
+}
+
+/* At these slightly larger ratios, increase the spacing. */
+@media (orientation: landscape) and (min-aspect-ratio: 16/10) {
+  #p2pContainer {
+    margin-left: 20vmin;
+  }
+}
