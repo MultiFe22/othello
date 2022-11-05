@@ -508,3 +508,23 @@ function onClick(event) {
   }
 }
 
+// Convert the board to "w" and "b" characters for the server.
+function boardToText() {
+  const newBoard = [];
+
+  for (const row of grid) {
+    const newRow = [];
+    for (const div of row) {
+      if (div.classList.contains('white')) {
+        newRow.push('w');
+      } else if (div.classList.contains('black')) {
+        newRow.push('b');
+      } else {
+        // index of empty square
+        newRow.push(0);
+      }
+    }
+    newBoard.push(newRow);
+  }
+  return newBoard;
+}
