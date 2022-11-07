@@ -1,49 +1,32 @@
-//game board
 var gameBoardAux = [[0, 1, 2, 3, 4, 5, 6, 7], [0, 1, 2, 3, 4, 5, 6, 7], [0, 1, 2, 3, 4, 5, 6, 7], [0, 1, 2, 3, 4, 5, 6, 7], [0, 1, 2, 3, 4, 5, 6, 7], [0, 1, 2, 3, 4, 5, 6, 7], [0, 1, 2, 3, 4, 5, 6, 7], [0, 1, 2, 3, 4, 5, 6, 7]];
-//human
 var huPlayer = "b";
-//ai
 var aiPlayer = "w";
-
-//round
-var round = 0; //max is 64
-
-//whose turnAux
-var turnAux = 0; //0 is hu, 1 is ai
-var black = 0; //number of black
-var white = 0; //number of white
+var round = 0; 
+var turnAux = 0; 
+var black = 0; 
+var white = 0; 
 
 var mode = 0;
 
-function setUp() { //sets up the board
-  //checker pattern
+function setUp() { 
   gameBoardAux[3][3] = "w";
   gameBoardAux[3][4] = "b";
   gameBoardAux[4][3] = "b";
   gameBoardAux[4][4] = "w";
 
-  setTimeout(function(){ display(); }, 500); //displays it
+  setTimeout(function(){ display(); }, 500); 
 
   if(turnAux == 1 && mode == 1) {
     compMove();
   }
 }
 
-function AITest(gameBoardAux) { //tests the AI
-    var computerPos = minimax(gameBoardAux, aiPlayer, 4).index;
-    var x = computerPos%8;
-    var y = Math.floor(computerPos/8);
-    return {x: x, y: y};
-}
-//2 player move functions
+function move(pos) { 
+  if(turnAux == 0 && canPlace(gameBoardAux, pos, huPlayer, aiPlayer)) { 
+    gameBoardAux = updateBoard(gameBoardAux, pos, huPlayer, aiPlayer); 
 
-function move(pos) { //actual move
-  if(turnAux == 0 && canPlace(gameBoardAux, pos, huPlayer, aiPlayer)) { //checks if it is humans turnAux and he/she can place a tile
-    gameBoardAux = updateBoard(gameBoardAux, pos, huPlayer, aiPlayer); //updates the board
+    round += 1; 
 
-    round += 1; //one more spot is gone
-
-    //checks if each player can make a move, starting with the opposite player, else the game is over
     if(canMove(gameBoardAux, aiPlayer, huPlayer)) {
       turnAux = 1;
     } else if(canMove(gameBoardAux, huPlayer, aiPlayer)) {
@@ -51,15 +34,15 @@ function move(pos) { //actual move
     } else {
       display();
       setTimeout(function(){ gameOverAux(); }, 1000);
-      return; //exits the function
+      return; 
     }
 
-  } else if(turnAux == 1 && canPlace(gameBoardAux, pos, aiPlayer, huPlayer)) { //same as above, checks if the ai can go
-    gameBoardAux = updateBoard(gameBoardAux, pos, aiPlayer, huPlayer); //updates the board
+  } else if(turnAux == 1 && canPlace(gameBoardAux, pos, aiPlayer, huPlayer)) { 
+    gameBoardAux = updateBoard(gameBoardAux, pos, aiPlayer, huPlayer); 
 
-    round += 1; //one more spot is gone
+    round += 1; 
 
-    //checks if each player can make a move, starting with the opposite player, else the game is over
+    
     if(canMove(gameBoardAux, huPlayer, aiPlayer)) {
       turnAux = 0;
     } else if(canMove(gameBoardAux, aiPlayer, huPlayer)){
@@ -67,24 +50,24 @@ function move(pos) { //actual move
     } else {
       display();
       setTimeout(function(){ gameOverAux(); }, 1000);
-      return; //exits the function
+      return; 
     }
   }
 
-  if(round == 64) { //if all the spots are taken, the game is over
+  if(round == 64) { 
     display();
     setTimeout(function(){ gameOverAux(); }, 1000);
   }
 
-  display(); //displays the board
+  display(); 
 }
 
 
 
 
-function gameOverAux() { //called when the game is over
+function gameOverAux() { 
   alert("game over");
-  //says who won
+  
   if(black > white) {
     alert("black won");
   } else if(black < white) {
@@ -92,10 +75,10 @@ function gameOverAux() { //called when the game is over
   } else if(black == white) {
     alert("tie");
   }
-  reset(); //resets the game
+  reset(); 
 }
 
-function reset() { //resets all variables
+function reset() { 
   gameBoardAux = [[0, 1, 2, 3, 4, 5, 6, 7], [0, 1, 2, 3, 4, 5, 6, 7], [0, 1, 2, 3, 4, 5, 6, 7], [0, 1, 2, 3, 4, 5, 6, 7], [0, 1, 2, 3, 4, 5, 6, 7], [0, 1, 2, 3, 4, 5, 6, 7], [0, 1, 2, 3, 4, 5, 6, 7], [0, 1, 2, 3, 4, 5, 6, 7]];
   huPlayer = "b";
   aiPlayer = "w";
@@ -103,52 +86,52 @@ function reset() { //resets all variables
   if(mode == 2) {
     turnAux = 0;
   }
-  setUp(); //sets up the board
+  setUp(); 
 }
 
-function getEmpty(b) { //returns an array of all positions(integers) that are empty
+function getEmpty(b) { 
   var board = clone(b);
   var posArray = [];
   for(var i = 0; i < board.length; i++) {
     for(var j = 0; j < board[i].length; j++) {
-      if(board[i][j] !== huPlayer && board[i][j] !== aiPlayer) { //makes sure it isn't filled
-        posArray.push(i * 8 + j); //returns integer form (0 - 63)
+      if(board[i][j] !== huPlayer && board[i][j] !== aiPlayer) { 
+        posArray.push(i * 8 + j); 
       }
     }
   }
-  return posArray; //returns array
+  return posArray; 
 }
 
-function canMove(b, player, otherPlayer) { //checks if the player can move
+function canMove(b, player, otherPlayer) { 
   var posMoves = 0;
-  var posArray = getEmpty(b); //gets all empty spots
+  var posArray = getEmpty(b); 
   for(var x = 0; x < posArray.length; x++) {
-      if(canPlace(b, posArray[x], player, otherPlayer)) { //checks if placing that tile in the spot will change the board
+      if(canPlace(b, posArray[x], player, otherPlayer)) { 
         posMoves += 1;
       }
     }
 
 
-  if(posMoves !== 0) { //if there are possible spots
+  if(posMoves !== 0) { 
     return true;
-  } else { //no possible spots
+  } else { 
     return false;
   }
 }
 
-function canPlace(b, pos, player, otherPlayer) { //checks if you can place a tile in that position that will change the board
+function canPlace(b, pos, player, otherPlayer) { 
   var prevBoard = clone(b);
-  var changedBoard = updateBoard(clone(b), pos, player, otherPlayer); //changed board
+  var changedBoard = updateBoard(clone(b), pos, player, otherPlayer); 
 
   var jPos = pos % 8;
   var iPos = Math.floor(pos / 8);
-  prevBoard[iPos][jPos] = player; //with the new tile in place in the previous board
+  prevBoard[iPos][jPos] = player; 
 
 
-  if(checkSame(prevBoard, changedBoard)) { //checks if the arrays are the same
+  if(checkSame(prevBoard, changedBoard)) { 
     return false;
   } else {
-    if(b[iPos][jPos] !== player && b[iPos][jPos] !== otherPlayer) { //makes sure that the position is an empty tile
+    if(b[iPos][jPos] !== player && b[iPos][jPos] !== otherPlayer) { 
       return true;
     } else {
       return false;
@@ -158,11 +141,11 @@ function canPlace(b, pos, player, otherPlayer) { //checks if you can place a til
 
 }
 
-function checkSame(array1, array2) { //compares two 2D arrays
-  if(array1.length == array2.length) { //checks if the lengths are the same
+function checkSame(array1, array2) { 
+  if(array1.length == array2.length) { 
     for(i = 0; i < array1.length; i++) {
       for(j = 0; j < array1[i].length; j++) {
-        if(array1[i][j] !== array2[i][j]) { //compares each position
+        if(array1[i][j] !== array2[i][j]) { 
           return false;
         }
       }
@@ -174,56 +157,56 @@ function checkSame(array1, array2) { //compares two 2D arrays
 }
 
 
-function clone(array) { //returns a cloned 2D array
-	var newArray = []; //clone
+function clone(array) { 
+	var newArray = []; 
   for(i = 0; i < array.length; i++) {
   	newArray[i] = [];
     for(j = 0; j < array[i].length; j++) {
-    	newArray[i][j] = array[i][j]; //adds to clone
+    	newArray[i][j] = array[i][j]; 
     }
   }
   return newArray;
 }
 
 
-function updateBoard(b, pos, player, otherPlayer) { //updates the board
+function updateBoard(b, pos, player, otherPlayer) { 
 
-  var board = clone(b); //clone of board
+  var board = clone(b); 
 
-  //position of new tile
+  
   var jPos = pos % 8;
   var iPos = Math.floor(pos / 8);
 
 
   board[iPos][jPos] = player;
 
-  var flipArray = []; //array of tiles to be flipped
-  var tempArray = []; //temporary array of tiles that can be flipped
+  var flipArray = []; 
+  var tempArray = []; 
 
 
-  //total of 8 directions to be checked
-  //2 VERTICAL, 2 HORIZONTAL, 4 DIAGONAL
-  //all 8 loops have the same format
+  
+  
+  
 
-  //VERTICAL
+  
 
-  //check up
-  for(i = 0; i < iPos; i++) { //checking moving up);
-    if(board[iPos - i - 1][jPos] == otherPlayer) { //checks if it is an opposite tile
-      tempArray.push([iPos - i - 1, jPos]); //adds to array
-    } else if(board[iPos - i - 1][jPos] == player) { //checks if it is the same tile
-      flipArray = addToArray(tempArray, flipArray); //adds all those that are in the temparray to the flip array
+  
+  for(i = 0; i < iPos; i++) { 
+    if(board[iPos - i - 1][jPos] == otherPlayer) { 
+      tempArray.push([iPos - i - 1, jPos]); 
+    } else if(board[iPos - i - 1][jPos] == player) { 
+      flipArray = addToArray(tempArray, flipArray); 
       break;
-    } else { //since the tiles in that line can't be flipped, it breaks
+    } else { 
       break;
     }
   }
 
-  //check down
+  
 
-  tempArray = []; //resets
+  tempArray = []; 
 
-  for(i = 0; i < 7 - iPos; i++) { //checking moving up);
+  for(i = 0; i < 7 - iPos; i++) { 
     if(board[iPos + i + 1][jPos] == otherPlayer) {
       tempArray.push([iPos + i + 1, jPos]);
     } else if(board[iPos + i + 1][jPos] == player) {
@@ -234,12 +217,12 @@ function updateBoard(b, pos, player, otherPlayer) { //updates the board
     }
   }
 
-  //HORIZONTAL
+  
 
-  tempArray = []; //resets
+  tempArray = []; 
 
-  //check left
-  for(j = 0; j < jPos; j++) { //checking moving up);
+  
+  for(j = 0; j < jPos; j++) { 
     if(board[iPos][jPos - j - 1] == otherPlayer) {
       tempArray.push([iPos, jPos - j - 1]);
     } else if(board[iPos][jPos - j - 1] == player) {
@@ -250,11 +233,11 @@ function updateBoard(b, pos, player, otherPlayer) { //updates the board
     }
   }
 
-  //check right
+  
 
-  tempArray = [];  //resets
+  tempArray = [];  
 
-  for(j = 0; j < 7 - jPos; j++) { //checking moving up);
+  for(j = 0; j < 7 - jPos; j++) { 
     if(board[iPos][jPos + j + 1] == otherPlayer) {
       tempArray.push([iPos, jPos + j + 1]);
     } else if(board[iPos][jPos + j + 1] == player) {
@@ -265,15 +248,15 @@ function updateBoard(b, pos, player, otherPlayer) { //updates the board
     }
   }
 
-  //DIAGONAL
+  
 
-  //right left down up
+  
 
-  tempArray = [];  //resets
+  tempArray = [];  
 
-  var min; //min value in that diagonal line
+  var min; 
 
-  //value derives from i and j position of the  pos
+  
   if(jPos < iPos) {
     min = jPos;
   } else {
@@ -281,7 +264,7 @@ function updateBoard(b, pos, player, otherPlayer) { //updates the board
   }
 
 
-  for(j = 0; j < min; j++) { //checking moving up);
+  for(j = 0; j < min; j++) { 
     if(board[iPos - j - 1][jPos - j - 1] == otherPlayer) {
       tempArray.push([iPos - j - 1, jPos - j - 1]);
     } else if(board[iPos - j - 1][jPos - j - 1] == player) {
@@ -292,21 +275,21 @@ function updateBoard(b, pos, player, otherPlayer) { //updates the board
     }
   }
 
-  //left right up down
+  
 
-  tempArray = []; //resets
+  tempArray = []; 
 
-  var max = 0; //max value in diagonal line
+  var max = 0; 
 
-  //value derives from i and j position of the pos
+  
 
-  if(jPos < iPos) { //left side
+  if(jPos < iPos) { 
     var iTemp = iPos;
     while(iTemp !== 7) {
       max += 1;
       iTemp += 1;
     }
-  } else { //right side
+  } else { 
     var jTemp = jPos;
     while(jTemp !== 7) {
       max += 1;
@@ -315,7 +298,7 @@ function updateBoard(b, pos, player, otherPlayer) { //updates the board
   }
 
 
-  for(i = 0; i < max; i++) { //checking moving up //right here
+  for(i = 0; i < max; i++) { 
     if(board[iPos + i + 1][jPos + i + 1] == otherPlayer) {
       tempArray.push([iPos + i + 1, jPos + i + 1]);
     } else if(board[iPos + i + 1][jPos + i + 1] == player) {
@@ -326,20 +309,20 @@ function updateBoard(b, pos, player, otherPlayer) { //updates the board
     }
   }
 
-  //left right down up
+  
 
-  tempArray = []; //resets
+  tempArray = []; 
 
-  var min; //min value in line
+  var min; 
 
-  //value derives from i and j position of the  pos
+  
   if(iPos + jPos < 8) {
     min = iPos;
   } else {
     min = 7 - jPos;
   }
 
-  for(j = 0; j < min; j++) { //checking moving up);
+  for(j = 0; j < min; j++) { 
     if(board[iPos - j - 1][jPos + j + 1] == otherPlayer) {
       tempArray.push([iPos - j - 1, jPos + j + 1]);
     } else if(board[iPos - j - 1][jPos + j + 1] == player) {
@@ -352,20 +335,20 @@ function updateBoard(b, pos, player, otherPlayer) { //updates the board
 
 
 
-  //right left up down
+  
 
-  tempArray = []; //resets temp array
+  tempArray = []; 
 
-  var max = 0; //max value in line
+  var max = 0; 
 
-  //value derives from i and j position of the  pos
-  if(iPos + jPos < 8) { //left side
+  
+  if(iPos + jPos < 8) { 
     var jTemp = jPos;
     while(jTemp !== 0) {
       max += 1;
       jTemp -= 1;
     }
-  } else { //right side
+  } else { 
     var iTemp = iPos;
     while(iTemp !== 7) {
       max += 1;
@@ -373,7 +356,7 @@ function updateBoard(b, pos, player, otherPlayer) { //updates the board
     }
   }
 
-  for(i = 0; i < max; i++) { //checking moving up);
+  for(i = 0; i < max; i++) { 
     if(board[iPos + i + 1][jPos - i - 1] == otherPlayer) {
       tempArray.push([iPos + i + 1, jPos - i - 1]);
     } else if(board[iPos + i + 1][jPos - i - 1] == player) {
@@ -384,21 +367,21 @@ function updateBoard(b, pos, player, otherPlayer) { //updates the board
     }
   }
 
-  board = flipValue(flipArray, board); //flips all the values
+  board = flipValue(flipArray, board); 
   return board;
 }
 
-function addToArray(array1, array2) { //adds values from one array to another
+function addToArray(array1, array2) { 
   for(i = 0; i < array1.length; i++) {
     array2.push(array1[i]);
   }
-  return array2; //returns combined array
+  return array2; 
 }
 
 
-function flipValue(array, board) { //fips values in board array
+function flipValue(array, board) { 
   for(z = 0; z < array.length; z++) {
-    //gets i and j pos and flips
+    
     var i = array[z][0];
     var j = array[z][1];
     if(board[i][j] == huPlayer) {
@@ -407,18 +390,18 @@ function flipValue(array, board) { //fips values in board array
       board[i][j] = huPlayer;
     }
   }
-  return board; //returns flipped board
+  return board; 
 }
 
-function calcScore(b, player) { //calculates score
+function calcScore(b, player) { 
   var board = clone(b);
   var score = 0;
   for(i = 0; i < board.length; i++) {
     for(j = 0; j < board[i].length; j++) {
-      if(board[i][j] == aiPlayer) { //ai is plus maximum
-        score += 1; //multiplies by it region value
-      } else if(board[i][j] == huPlayer) { //human is minus minimum
-        score -= 1; //multiply by region value
+      if(board[i][j] == aiPlayer) { 
+        score += 1; 
+      } else if(board[i][j] == huPlayer) { 
+        score -= 1; 
       }
     }
   }
@@ -426,25 +409,25 @@ function calcScore(b, player) { //calculates score
 
 }
 
-function riskRegions(i, j) { //returns value of risk region
+function riskRegions(i, j) { 
   var pos = i * 8 + j;
-  //r1 - inner 4 * 4 - 1
+  
   var r1 = 2;
   var arrayR1 = [18, 19, 20, 21, 26, 27, 28, 29, 34, 35, 36, 37, 42, 43, 44, 45];
-  //r2 - border around r1 except corners - 0.5;
+  
   var r2 = 3;
   var arrayR2 = [10, 11, 12, 13, 17, 22, 25, 30, 33, 38, 41, 46, 50, 51, 52, 53];
-  //r3 - border of grid except corner and tiles next to corners - 2
+  
   var r3 = 1;
   var arrayR3 = [2, 3, 4, 5, 16, 24, 32, 40, 23, 31, 39, 47, 58, 59, 60, 61];
-  //r4 - three tiles touching each corner horizontally, vertically and diagonally - 0.25
+  
   var r4 = 4;
   var arrayR4 = [1, 8, 9, 6, 14, 15, 48, 49, 57, 54, 55, 62];
-  //r5 - corners - 4
+  
   var r5 = 0;
   var arrayR5 = [0, 7, 56, 63];
 
-  //identify which region it is in
+  
   if(inArray(arrayR1, pos)) {
     return r1;
   } else if(inArray(arrayR2, pos)) {
@@ -459,7 +442,7 @@ function riskRegions(i, j) { //returns value of risk region
 
 }
 
-function inArray(array, char) { //returns true if in array
+function inArray(array, char) { 
   for(var i = 0; i < array.length; i++) {
     if(array[i] == char) {
       return true;
@@ -469,12 +452,12 @@ function inArray(array, char) { //returns true if in array
 }
 
 
-function potentialSpots(b, player, otherPlayer) { //returns potential spots for move
+function potentialSpots(b, player, otherPlayer) { 
   var board = clone(b);
-  var posArray = getEmpty(board); //gets all empty spots
+  var posArray = getEmpty(board); 
   var potentialArray = [];
   for(var x = 0; x < posArray.length; x++) {
-      if(canPlace(b, posArray[x], player, otherPlayer)) { //checks if placing that tile in the spot will change the board
+      if(canPlace(b, posArray[x], player, otherPlayer)) { 
         potentialArray.push(posArray[x]);
       }
     }
@@ -482,8 +465,9 @@ function potentialSpots(b, player, otherPlayer) { //returns potential spots for 
 }
 
 
-function minimax(newBoard, player, layer) { //minimax function aka ai function
-  //get the number of available spots to move
+function minimax(newBoard, player, layer) { 
+  
+  console.log("minimax");
   var availSpots;
   if(player == aiPlayer) {
     availSpots = potentialSpots(clone(newBoard), aiPlayer, huPlayer);
@@ -492,68 +476,68 @@ function minimax(newBoard, player, layer) { //minimax function aka ai function
   }
 
 
-  //return score if
-  if(layer == 6) { //furthest layer
+  
+  if(layer == 6) { 
     return {score:calcScore(newBoard, player)};
-  } else if(availSpots.length == 0) { //no more spots available
+  } else if(availSpots.length == 0) { 
     return {score:calcScore(newBoard, player)};
   }
 
 
 
 
-  var moves = []; //array of all possible moves
+  var moves = []; 
 
-  for(var i = 0; i < availSpots.length; i++) { //for each move
-    var move = {}; //create object of move
-    move.index = availSpots[i]; //pos of move
-    move.board = clone(newBoard); //board of move
+  for(var i = 0; i < availSpots.length; i++) { 
+    var move = {}; 
+    move.index = availSpots[i]; 
+    move.board = clone(newBoard); 
 
-    //updates the board with the move
+    
     if(player == huPlayer) {
       move.board = updateBoard(move.board, move.index, huPlayer, aiPlayer);
     } else if(player == aiPlayer) {
       move.board = updateBoard(move.board, move.index, aiPlayer, huPlayer);
     }
 
-    //gets score of the move
+    
     if(player == aiPlayer) {
-      var result = minimax(move.board, huPlayer, layer + 1); //calls minimax again until it gets score
+      var result = minimax(move.board, huPlayer, layer + 1); 
       move.score = result.score;
     } else if(player == huPlayer) {
-      var result = minimax(move.board, aiPlayer, layer + 1); //calls minimax again until it gets score
+      var result = minimax(move.board, aiPlayer, layer + 1); 
       move.score = result.score;
     }
 
-    moves.push(move); //pushes the move to the array
+    moves.push(move); 
 
   }
 
-  var bestMove = 0; //best move index
+  var bestMove = 0; 
   moves = getBestRisk(moves);
-  //console.log("moves");
-  //console.log(moves);
-  if(player === aiPlayer){ //maximize ai
+  
+  
+  if(player === aiPlayer){ 
     var bestScore = moves[0].score;
-    for(var i = 0; i < moves.length; i++){ //maximize ai
-      if(moves[i].score > bestScore){ //search for the highest score
+    for(var i = 0; i < moves.length; i++){ 
+      if(moves[i].score > bestScore){ 
         bestScore = moves[i].score;
         bestMove = i;
       }
     }
 
   } else {
-  // else loop over the moves and choose the move with the lowest score
+  
     var bestScore = moves[0].score;
-    for(var i = 0; i < moves.length; i++){ //minimize human
-      if(moves[i].score < bestScore){ //search for the lowest score
+    for(var i = 0; i < moves.length; i++){ 
+      if(moves[i].score < bestScore){ 
         bestScore = moves[i].score;
         bestMove = i;
       }
     }
   }
 
-  // return the chosen move (object) from the moves array
+  
   return moves[bestMove];
 }
 

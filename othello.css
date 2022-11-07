@@ -2,11 +2,13 @@
  * General, high-level styles.
  * =========================== */
 
-:root {
+ :root {
   /* The size of the squares in the Othello board.  Many other things are
    * computed relative to this size, which will change in certain screen
    * layouts and sizes. */
   --square-size: 10vmin;
+  background-color: rgb(0, 68, 26);
+  color: white;
 }
 
 body {
@@ -55,11 +57,12 @@ a.docs.right {
 
 button {
   /* Buttons are white and rounded. */
-  background-color: white;
-  border: black solid 0.15vmin;
+  background-color: rgb(92, 186, 92);
+  color: white;
+  border: 0vmin;
   border-radius: 3.5vmin;
   height: 7vmin;
-  font-size: 4.5vmin;
+  font-size: 2.5vmin;
   padding: 0 3.5vmin;
 }
 
@@ -73,6 +76,10 @@ input[type=text] {
   /* Text input sizing and spacing. */
   width: 30vmin;
   margin-bottom: 5vmin;
+}
+
+#gameModeButton{
+  margin-top: 3vmin;
 }
 
 .hide-by-default:not(.show) {
@@ -161,8 +168,8 @@ input[type=text] {
 
 .square {
   /* The squares are all green with a black border. */
-  background-color: green;
-  border: 0.15vmin solid black;
+  background-color: rgb(92, 186, 92);
+  border: 0.3vmin solid rgb(0, 68, 26);;
 
   /* The size of the squares should include the border, or else the overall
    * board might be too big. */
@@ -179,7 +186,7 @@ input[type=text] {
   width: 2vmin;
   height: 2vmin;
   border-radius: 50%;
-  background-color: black;
+  background-color: rgb(0, 68, 26);
 }
 
 /* The positions of specific spots. */
@@ -242,7 +249,7 @@ input[type=text] {
 /* Class attached to the stone in the score panel of the player whose turn it
  * is. */
 .turn {
-  filter: drop-shadow(0vmin 0vmin 2vmin red);
+  filter: drop-shadow(0vmin 0vmin 2vmin rgb(92, 186, 92));
 }
 
 /* The message container shows some status text on top of the stone. */
@@ -308,7 +315,7 @@ svg {
    * you just won't see it until we give the container a color class. */
   fill: none;
   stroke: none;
-  stroke-width: 1px;  /* In SVG coordinates, not page coordinates. */
+  stroke-width: 0px;  /* In SVG coordinates, not page coordinates. */
 }
 
 .black .stone {
